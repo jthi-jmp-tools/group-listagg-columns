@@ -35,7 +35,7 @@ create_listagg_table = function({dt, list_group_col, list_concat_col, col_suffix
 	GROUP BY "^group_cols^"
 	]\");
 	dt_concat = Query(
-		Table(Current Data Table(), "t1"),
+		Table(dt, "t1"),
 		custom_sql
 	);
 	dt_concat << Set Name("Group concatenated " || Concat Items(list_concat_col, ", ") || " by " || Concat Items(list_group_col, ", "));
@@ -46,6 +46,11 @@ create_listagg_table = function({dt, list_group_col, list_concat_col, col_suffix
 			);
 		);
 	);
+	
+	// remove unnecessary table scripts and variables
+	Try(dt_concat << Delete Scripts(dt_concat << Get Table Script Names));	
+	Try(dt_concat << Delete Table Variable("SQL"));
+	
 	return(dt_concat);
 );
 Write();
